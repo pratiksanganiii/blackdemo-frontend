@@ -1,26 +1,18 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import "./App.css";
+import { BrowserRouter } from "react-router-dom";
+import { Router } from "./config/RouterConfig";
+import { useDispatch, useSelector } from "react-redux";
+import { Spin } from "antd";
+import { initializeApp } from "./store/root/rootSlice";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const { appLoading } = useSelector((state: any) => state.root);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(initializeApp());
+  }, [dispatch]);
+  return <BrowserRouter>{appLoading ? <Spin /> : <Router />}</BrowserRouter>;
 }
 
 export default App;
