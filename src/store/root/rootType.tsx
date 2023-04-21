@@ -1,0 +1,1 @@
+export type ErrorProps = { name: string; errorss: string[] }[];

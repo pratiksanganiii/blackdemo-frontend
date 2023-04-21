@@ -1,5 +1,6 @@
-import { message } from "antd";
+import { FormInstance, message } from "antd";
 import axios from "axios";
+import { ErrorProps } from "./rootType";
 
 const setAxiosBaseUrl = () => {
   axios.defaults.baseURL =
@@ -15,6 +16,15 @@ const resetStore = (): void => {
   localStorage.getItem("stackModule") && localStorage.removeItem("stackModule");
   localStorage.getItem("viewCompanyAsId") &&
     localStorage.removeItem("viewCompanyAsId");
+};
+
+export const assignErrorToInput = (
+  form: FormInstance,
+  errors?: ErrorProps
+): void => {
+  if (errors?.length) {
+    form.setFields(errors);
+  }
 };
 
 const setAxiosInterceptor = () => {

@@ -1,6 +1,7 @@
 body {
   background-color: #61dafbcc;
 }
+
 .App {
   text-align: center;
 }
@@ -50,5 +51,19 @@ body {
 #login-form {
   background-color: #61dafb;
   padding: 15px;
-  border-radius: 5px;
+  width: 450px;
+  border-radius: 10px;
+  .align-center {
+    text-align: center;
+    button {
+      text-align: center;
+    }
+  }
+  .register-link {
+    width: 100%;
+    text-align: center;
+  }
+  .ant-form-item-label{
+    text-align: start;
+  }
 }

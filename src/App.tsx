@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "./App.css";
+import "./App.scss";
 import { BrowserRouter } from "react-router-dom";
 import { Router } from "./config/RouterConfig";
 import { useDispatch, useSelector } from "react-redux";

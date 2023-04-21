@@ -1,31 +1,40 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import authService from "./authService";
-import { LoginPayloadProps } from "./authTypes";
+import { LoginPayloadProps, RegisterPayloadProps } from "./authTypes";
 
 // Get user from localStorage
 const userFromLocalStorage = localStorage.getItem("user");
 
 const initialState = {
+  token: localStorage.getItem("token"),
   user: userFromLocalStorage ? JSON.parse(userFromLocalStorage) : null,
   isError: false,
   isSuccess: false,
   isLoading: false,
   message: "",
+  errors: [],
 };
 
-export const login: any = createAsyncThunk(
+export const login = createAsyncThunk(
   "auth/login",
   async (loginPayload: LoginPayloadProps, thunkAPI) => {
     try {
       return await authService.login(loginPayload);
     } catch (error: any) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      thunkAPI.rejectWithValue(message);
+      const errors: any[] = error.data.error ?? "Something went wrong.";
+      return thunkAPI.rejectWithValue(errors);
+    }
+  }
+);
+
+export const register = createAsyncThunk(
+  "auth/register",
+  async (registerPayload: RegisterPayloadProps, thunkAPI) => {
+    try {
+      return await authService.register(registerPayload);
+    } catch (error: any) {
+      const errors: any[] = error.data.error ?? "Something went wrong.";
+      return thunkAPI.rejectWithValue(errors);
     }
   }
 );
@@ -39,6 +48,10 @@ export const authSlice = createSlice({
       state.isSuccess = false;
       state.isError = false;
       state.message = "";
+      state.errors = [];
+    },
+    resetFormErrors: (state) => {
+      state.errors = [];
     },
   },
   extraReducers: (builder) => {
@@ -51,9 +64,33 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.message = "Logged in.";
-        state.user = action.payload;
+        state.user = action.payload.user;
+        state.token = action.payload.user.token;
+      })
+      .addCase(login.rejected, (state, action: any) => {
+        state.isError = true;
+        state.isLoading = false;
+        state.errors = action.payload;
+      })
+      .addCase(register.pending, (state) => {
+        state.isError = false;
+        state.isLoading = true;
+        state.message = "";
+      })
+      .addCase(register.rejected, (state, action: any) => {
+        state.isError = true;
+        state.isLoading = false;
+        state.errors = action.payload;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.isError = false;
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.message = "Logged in.";
+        state.user = action.payload.user;
+        state.token = action.payload.user.token;
       });
   },
 });
-const authReducer = authSlice.reducer;
-export default authReducer;
+export const { reset, resetFormErrors } = authSlice.actions;
+export default authSlice.reducer;

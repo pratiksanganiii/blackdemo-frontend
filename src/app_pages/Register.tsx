@@ -1,47 +1,65 @@
+import { Button, Form, Input } from "antd";
 import React, { useEffect } from "react";
-
-import { Button, Checkbox, Form, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { login, resetFormErrors } from "../store/auth/authSlice";
-import { LoginPayloadProps } from "../store/auth/authTypes";
 import { Link, useNavigate } from "react-router-dom";
+import { register, resetFormErrors } from "../store/auth/authSlice";
 import { assignErrorToInput } from "../store/root/rootService";
 
-const Login: React.FC = () => {
-  const { user, errors } = useSelector((state: any) => state.auth);
+const Register = () => {
   const dispatch: any = useDispatch();
   const navigate = useNavigate();
-  const [loginForm] = Form.useForm();
+  const [registerForm] = Form.useForm();
+  const { token, errors } = useSelector((state: any) => state.auth);
 
-  const onFinish = (values: LoginPayloadProps) => {
-    dispatch(login(values));
+  const onFinish = (values: any) => {
+    if (values.password === values.confirmPassword) {
+      dispatch(register(values));
+    }
   };
 
   useEffect(() => {
-    if (user) {
+    if (token) {
+      console.log(token);
       navigate("/");
     }
-  }, [user, navigate]);
+  }, [token, navigate]);
 
   useEffect(() => {
     if (errors.length) {
-      assignErrorToInput(loginForm, errors);
+      assignErrorToInput(registerForm, errors);
       dispatch(resetFormErrors());
     }
-  }, [errors, dispatch, loginForm]);
+  }, [errors, dispatch, registerForm]);
 
   return (
     <Form
-      form={loginForm}
       name="basic"
       labelCol={{ span: 8 }}
       id="login-form"
       wrapperCol={{ span: 16 }}
+      form={registerForm}
       initialValues={{ remember: true }}
       onFinish={onFinish}
       autoComplete="off"
     >
-      <h3 className="align-center">Login</h3>
+      <h3 className="align-center">Register</h3>
+
+      <Form.Item
+        label="First Name"
+        name="firstName"
+        rules={[{ required: true, message: "Please input your First Name!" }]}
+      >
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        label="Last Name"
+        name="lastName"
+        rules={[{ required: true, message: "Please input your Last Name!" }]}
+      >
+        <Input />
+      </Form.Item>
+
       <Form.Item
         label="Email"
         name="email"
@@ -59,11 +77,11 @@ const Login: React.FC = () => {
       </Form.Item>
 
       <Form.Item
-        name="remember"
-        valuePropName="checked"
-        wrapperCol={{ offset: 8, span: 16 }}
+        label="Confirm Password"
+        name="confirmPassword"
+        rules={[{ required: true, message: "Please confirm your password!" }]}
       >
-        <Checkbox className="align-center">Remember me</Checkbox>
+        <Input.Password />
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
@@ -71,13 +89,14 @@ const Login: React.FC = () => {
           Submit
         </Button>
       </Form.Item>
+
       <div className="register-link">
-        <Link className="align-center" to={"/register"}>
-          New User? Register here
+        <Link className="align-center" to={"/login"}>
+          Existing User? Login here
         </Link>
       </div>
     </Form>
   );
 };
 
-export default Login;
+export default Register;

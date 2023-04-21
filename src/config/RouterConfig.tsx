@@ -1,8 +1,10 @@
 import { useRoutes } from "react-router-dom";
 import Dashboard from "../app_pages/Dashboard";
 import AuthLayout from "../layouts/AuthLayout";
-import Login from "../app_pages/Login";
 import MainLayout from "../layouts/MainLayout";
+import React from "react";
+const Login = React.lazy(() => import("../app_pages/Login"));
+const Register = React.lazy(() => import("../app_pages/Register"));
 
 const RouterConfig = [
   {
@@ -11,6 +13,10 @@ const RouterConfig = [
       {
         path: "/login",
         element: <Login />,
+      },
+      {
+        path: "/register",
+        element: <Register />,
       },
     ],
   },
