@@ -19,7 +19,6 @@ const Register = () => {
 
   useEffect(() => {
     if (token) {
-      console.log(token);
       navigate("/");
     }
   }, [token, navigate]);

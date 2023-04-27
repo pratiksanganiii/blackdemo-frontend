@@ -11,11 +11,6 @@ const resetStore = (): void => {
   const authToken = localStorage.getItem("token");
   authToken && localStorage.removeItem("token");
   authToken && (window.location.href = "/login");
-  localStorage.getItem("project") && localStorage.removeItem("project");
-  localStorage.getItem("company") && localStorage.removeItem("company");
-  localStorage.getItem("stackModule") && localStorage.removeItem("stackModule");
-  localStorage.getItem("viewCompanyAsId") &&
-    localStorage.removeItem("viewCompanyAsId");
 };
 
 export const assignErrorToInput = (
@@ -85,6 +80,10 @@ const setNotificationConfig = (): void => {
   });
 };
 
+const testAPIStatus = async () => {
+  return (await axios.get("/")).data;
+};
+
 const initializeApp = () => {
   setAxiosBaseUrl();
   setAxiosInterceptor();
@@ -93,5 +92,6 @@ const initializeApp = () => {
 
 const rootService = {
   initializeApp,
+  testAPIStatus
 };
 export default rootService;

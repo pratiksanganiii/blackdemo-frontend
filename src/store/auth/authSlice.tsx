@@ -21,7 +21,7 @@ export const login = createAsyncThunk(
     try {
       return await authService.login(loginPayload);
     } catch (error: any) {
-      const errors: any[] = error.data.error ?? "Something went wrong.";
+      const errors: any[] = error.data.error ?? "";
       return thunkAPI.rejectWithValue(errors);
     }
   }
@@ -33,7 +33,7 @@ export const register = createAsyncThunk(
     try {
       return await authService.register(registerPayload);
     } catch (error: any) {
-      const errors: any[] = error.data.error ?? "Something went wrong.";
+      const errors: any[] = error.data.error ?? "";
       return thunkAPI.rejectWithValue(errors);
     }
   }

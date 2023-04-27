@@ -24,7 +24,7 @@ const Login: React.FC = () => {
   }, [user, navigate]);
 
   useEffect(() => {
-    if (errors.length) {
+    if (Array.isArray(errors) && errors.length) {
       assignErrorToInput(loginForm, errors);
       dispatch(resetFormErrors());
     }

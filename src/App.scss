@@ -63,7 +63,34 @@ body {
     width: 100%;
     text-align: center;
   }
-  .ant-form-item-label{
+  .ant-form-item-label {
     text-align: start;
+  }
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+#root {
+  #chatUserList {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    #chatUser {
+      border: 1px solid grey;
+      padding: 5px;
+      border-radius: 5px;
+      border-right: 0px;
+      user-select: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      &:hover {
+        background-color: rgb(116, 181, 185);
+      }
+    }
+    .chatUserSelected {
+      background-color: rgb(116, 181, 185);
+    }
   }
 }
