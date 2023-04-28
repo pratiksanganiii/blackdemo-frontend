@@ -5,6 +5,7 @@ import { Input } from "antd";
 import { useSelector } from "react-redux";
 import {
   ActiveUserType,
+  ChatHistoryInterface,
   ClientToServerEvents,
   ServerToClientEvents,
 } from "../../../store/chat/ChatTypes";
@@ -13,18 +14,24 @@ import { Socket } from "socket.io-client";
 const ChatBar = ({ sendTo }: { sendTo: ActiveUserType | undefined }) => {
   // const { user } = useSelector((state: any) => state.auth);
   const [message, setMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState<ChatHistoryInterface[]>([]);
+
+  const { user } = useSelector((state: any) => state.auth);
   const {
     socket,
   }: { socket: Socket<ServerToClientEvents, ClientToServerEvents> } =
     useSelector((state: any) => state.chat);
+  // const { user } = useSelector((state: any) => state.auth);
 
   useEffect(() => {
-    socket.on("chatMessageFromServer", ({ from, message, userId }) => {
-      //
+    socket.on("chatMessageFromServer", ({ message, userId }) => {
+      setChatHistory((chat) => {
+        return [...chat, { type: "received", message }];
+      });
     });
-    const chatLog = document.getElementById("chatLog")
-    if(chatLog){
-      chatLog.scrollTo({top:chatLog.scrollHeight})
+    const chatLog = document.getElementById("chatLog");
+    if (chatLog) {
+      chatLog.scrollTo({ top: chatLog.scrollHeight });
     }
   }, [socket]);
 
@@ -37,20 +44,17 @@ const ChatBar = ({ sendTo }: { sendTo: ActiveUserType | undefined }) => {
           height: "90%",
           overflow: "scroll",
           overflowX: "hidden",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        <Sent />
-        <Received />
-        <Sent />
-        <Received />
-        <Sent />
-        <Received />
-        <Sent />
-        <Received />
-        <Sent />
-        <Received />
-        <Sent />
-        <Received />
+        {chatHistory.map((chat, id) =>
+          chat.type === "sent" ? (
+            <Sent key={id} data={chat} />
+          ) : (
+            <Received key={id} data={chat} />
+          )
+        )}
       </div>
       {socket ? (
         <div style={{ height: "5%" }}>
@@ -61,12 +65,20 @@ const ChatBar = ({ sendTo }: { sendTo: ActiveUserType | undefined }) => {
                   sendTo: sendTo?.socketId,
                   message,
                 });
+                setChatHistory((chats) => {
+                  return [...chats, { type: "sent", message }];
+                });
                 setMessage("");
               }
             }}
             value={message}
             onChange={(e) => {
               setMessage(e.target.value);
+              socket.emit("userTypingStatus", {
+                isTyping: true,
+                from: user._id,
+                to: sendTo?.userId ?? "",
+              });
             }}
             placeholder="Type a message"
           />

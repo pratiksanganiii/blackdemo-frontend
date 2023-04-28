@@ -1,11 +1,10 @@
 import React from "react";
+import { ChatHistoryInterface } from "../../../store/chat/ChatTypes";
 
-const Received = () => {
+const Received = ({ data }: { data: ChatHistoryInterface }) => {
   return (
     <div style={{ maxWidth: "80%", float: "left", margin: "5px" }}>
-      This is demo message received. This is demo message received. This is demo
-      message received. This is demo message received. This is demo message
-      received. This is demo message received. This is demo message received.
+      {data.message}
     </div>
   );
 };
