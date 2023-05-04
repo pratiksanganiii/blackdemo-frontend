@@ -25,19 +25,21 @@ const ChatBar = ({ sendTo }: { sendTo: ActiveUserType | undefined }) => {
 
   useEffect(() => {
     socket.on("chatMessageFromServer", ({ message, userId }) => {
-      setChatHistory((chat) => {
-        return [...chat, { type: "received", message }];
-      });
+      if (userId === sendTo?.userId) {
+        setChatHistory((chat) => {
+          return [...chat, { type: "received", message }];
+        });
+      }
     });
     const chatLog = document.getElementById("chatLog");
     if (chatLog) {
       chatLog.scrollTo({ top: chatLog.scrollHeight });
     }
-  }, [socket]);
+  }, [socket, user._id, sendTo?.userId]);
 
   return (
     <div style={{ width: "75%", padding: "5px" }}>
-      <header style={{ height: "5%" }}>{sendTo?.userId}</header>
+      <header style={{ height: "5%" }}>{sendTo?.email}</header>
       <div
         id="chatLog"
         style={{
@@ -61,10 +63,18 @@ const ChatBar = ({ sendTo }: { sendTo: ActiveUserType | undefined }) => {
           <Input
             onPressEnter={() => {
               if (sendTo?.socketId && message) {
-                socket.emit("chatMessageFromClient", {
-                  sendTo: sendTo?.socketId,
-                  message,
-                });
+                socket.emit(
+                  "chatMessageFromClient",
+                  {
+                    sendTo: sendTo?.socketId,
+                    message,
+                    from: user._id,
+                    to: sendTo.userId,
+                  },
+                  (res) => {
+                    console.log(res);
+                  }
+                );
                 setChatHistory((chats) => {
                   return [...chats, { type: "sent", message }];
                 });
@@ -72,13 +82,24 @@ const ChatBar = ({ sendTo }: { sendTo: ActiveUserType | undefined }) => {
               }
             }}
             value={message}
+            onBlur={() => {
+              if (sendTo?.userId) {
+                socket.emit("userTypingStatus", {
+                  isTyping: false,
+                  from: user._id,
+                  to: sendTo?.userId,
+                });
+              }
+            }}
             onChange={(e) => {
               setMessage(e.target.value);
-              socket.emit("userTypingStatus", {
-                isTyping: true,
-                from: user._id,
-                to: sendTo?.userId ?? "",
-              });
+              if (sendTo?.userId) {
+                socket.emit("userTypingStatus", {
+                  isTyping: true,
+                  from: user._id,
+                  to: sendTo?.userId,
+                });
+              }
             }}
             placeholder="Type a message"
           />

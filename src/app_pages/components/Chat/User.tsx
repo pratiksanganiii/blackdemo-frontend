@@ -19,8 +19,8 @@ const User = ({
         }}
         className={`${isSelected ? "chatUserSelected" : ""}`}
       >
-        <span>{activeUser.userId}</span>
-        <span>Last Chat</span>
+        <span>{activeUser.email}</span>
+        {activeUser.unseenCount!==0 && <span>{activeUser.unseenCount}</span>}
       </div>
     </>
   );

@@ -22,8 +22,13 @@ const sendMessage = async (payload: {
   return await axios.post("chat/save", payload);
 };
 
+const getRecentChats = async (id: string) => {
+  return await axios.get(`/chat/getRecentChats/${id}`);
+};
+
 const chatActions = {
   createChatConnection,
   sendMessage,
+  getRecentChats
 };
 export default chatActions;

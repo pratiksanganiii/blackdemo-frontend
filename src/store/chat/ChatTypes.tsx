@@ -1,9 +1,21 @@
-export type ActiveUserType = { socketId: string; userId: string };
+export type ActiveUserType = {
+  socketId: string;
+  userId: string;
+  unseenCount: number;
+  email?: string;
+};
 
 export interface ClientToServerEvents {
-  chatMessageFromClient: (payload: { sendTo: string; message: string }) => void;
+  chatMessageFromClient: (
+    payload: { sendTo: string; message: string; from: string; to: string },
+    callback: (res: any) => void
+  ) => void;
   userDisconnected: (userId: string) => void;
-  userConnected: (payload: { userId: string; socketId: string }) => void;
+  userConnected: (payload: {
+    userId: string;
+    socketId: string;
+    email?: string;
+  }) => void;
   userTypingStatus: (payload: {
     isTyping: boolean;
     from: string;
@@ -26,9 +38,11 @@ export interface ServerToClientEvents {
   userConnected: ({
     userId,
     socketId,
+    email
   }: {
     userId: string;
     socketId: string;
+    email?:string
   }) => void;
   userDisconnected: ({
     userId,
@@ -41,7 +55,7 @@ export interface ServerToClientEvents {
 export interface ChatStateInterface {
   socket?: any;
   loading: boolean;
-  chats: any[];
+  chats: any;
   error: any;
 }
 

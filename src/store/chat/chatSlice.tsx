@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ChatStateInterface } from "./ChatTypes";
-import chatActions from "./chatActions";
+import chatActions from "./chatService";
 
 const initialState: ChatStateInterface = {
   socket: undefined,
@@ -11,7 +11,7 @@ const initialState: ChatStateInterface = {
 
 export const createChatConnection = createAsyncThunk(
   "chat/createConnection",
-  (userId:string, thunkAPI) => {
+  (userId: string, thunkAPI) => {
     try {
       return chatActions.createChatConnection(userId);
     } catch (error) {
@@ -25,6 +25,17 @@ export const sendMessage = createAsyncThunk(
   (payload: any, thunkAPI) => {
     try {
       return chatActions.sendMessage(payload);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const getRecentChats = createAsyncThunk(
+  "chat/getRecentChats",
+  (userId: string, thunkAPI) => {
+    try {
+      return chatActions.getRecentChats(userId);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -57,6 +68,11 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessage.rejected, (state) => {
         state.error = "Not send.";
+      }).addCase(getRecentChats.pending,(state)=>{
+        state.loading=true
+      }).addCase(getRecentChats.fulfilled,(state,action)=>{
+        state.loading=false
+        state.chats = action.payload.data
       });
   },
 });

@@ -1,56 +1,27 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import User from "./User";
 import { useSelector } from "react-redux";
-import { Socket } from "socket.io-client";
-import {
-  ActiveUserType,
-  ClientToServerEvents,
-  ServerToClientEvents,
-} from "../../../store/chat/ChatTypes";
-import { message } from "antd";
+import { ActiveUserType } from "../../../store/chat/ChatTypes";
 
-const Sidebar = ({
+const Sidebar = ({ 
   setSendTo,
   sendTo,
+  activeUsers,
 }: {
   setSendTo: Dispatch<SetStateAction<ActiveUserType | undefined>>;
   sendTo: ActiveUserType | undefined;
+  activeUsers: ActiveUserType[];
 }) => {
-  const {
-    socket,
-  }: { socket: Socket<ServerToClientEvents, ClientToServerEvents> } =
-    useSelector((state: any) => state.chat);
   const { user } = useSelector((state: any) => state.auth);
-  const [activeUsers, setActiveUsers] = useState<ActiveUserType[]>([]);
 
-  useEffect(()=>{
-    setSendTo(undefined)
-  },[activeUsers,setSendTo])
-
-  useEffect(() => {
-    if (socket) {
-      socket.on("users", (users) => {
-        setActiveUsers(users);
-      });
-      socket.on("userConnected", ({ userId, socketId }) => {
-        message.info(`${userId} Online`);
-        setActiveUsers((old) => {
-          if (old.findIndex((user) => user.socketId === socketId) === -1) {
-            return [...old, { userId, socketId }];
-          }
-          return old;
-        });
-      });
-      socket.on("userDisconnected", ({ userId }) => {
-        setActiveUsers((old) => {
-          const newU = old.filter((user) => {
-            return user.userId !== userId;
-          });
-          return [...newU];
-        });
-      });
-    }
-  }, [socket]);
+  // useEffect(() => {
+  //   setSendTo((prev) => {
+  //     if (prev) {
+  //       return activeUsers.find((user) => user.userId === prev.userId);
+  //     }
+  //     return undefined;
+  //   });
+  // }, [activeUsers, setSendTo]);
 
   return (
     <div
